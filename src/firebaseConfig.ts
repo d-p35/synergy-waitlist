@@ -4,8 +4,8 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCkkCgo_8qlbvc7WKI3r1CU92wU8am_7X8",
-  authDomain: "join-waitlist-59ed4.firebaseapp.com",
+  apiKey: "process.env.FIREBASE_API",
+  authDomain: "process.env.AUTH_DOMAIN",
   projectId: "join-waitlist-59ed4",
   storageBucket: "join-waitlist-59ed4.appspot.com",
   messagingSenderId: "51834626343",
