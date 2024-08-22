@@ -22,7 +22,7 @@ export function LandingPage({}: Props) {
 
     try {
       await addDoc(emailCollection, { email });
-      setAlert({ message: 'Email added to waitlist!', type: 'success', duration: 5000 });
+      setAlert({ message: 'You are now on the waitlist.', type: 'success', duration: 5000 });
       setEmail(''); // Clear the email input field after successful submission
     } catch (error) {
       console.error('Error adding email to waitlist: ', error);
