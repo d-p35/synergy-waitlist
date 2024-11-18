@@ -3,47 +3,60 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { app } from "@/firebaseConfig";
 import Alert from "../components/alert";
 import { BackgroundBeams } from "@/components/ui/background-beams";
-import Guru from "@/components/robo";
+import Image from "next/image";
 
 type Props = {};
 
 export function LandingPage({}: Props) {
-  const [email, setEmail] = useState<string>("");
+  const [formData, setFormData] = useState({ fullName: "", email: "" });
   const [alert, setAlert] = useState<{
     message: string;
     type: "success" | "error" | "info" | "warning";
     duration: number;
   } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Reset the alert before processing a new submission
     setAlert(null);
+    setIsSubmitting(true);
 
     const db = getFirestore(app);
     const emailCollection = collection(db, "waitlist");
 
     try {
-      await addDoc(emailCollection, { email });
+      await addDoc(emailCollection, formData);
       setAlert({
         message: "You are now on the waitlist.",
         type: "success",
         duration: 5000,
       });
-      setEmail(""); // Clear the email input field after successful submission
+      setFormData({ fullName: "", email: "" }); // Reset the form
     } catch (error) {
-      console.error("Error adding email to waitlist: ", error);
+      console.error("Error adding to waitlist: ", error);
       setAlert({
-        message: "Failed to add email to waitlist",
+        message: "Failed to add to waitlist",
         type: "error",
         duration: 5000,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="h-screen w-full bg-neutral-950 relative flex flex-col items-center justify-center antialiased text-gray-50 overflow-hidden">
+    <div className="relative h-screen w-full bg-neutral-950 text-white flex flex-col items-center justify-center overflow-hidden">
+      {/* Background Beams */}
+      <div className="absolute inset-0 z-0">
+        <BackgroundBeams />
+      </div>
+
+      {/* Alert Component */}
       {alert && (
         <Alert
           message={alert.message}
@@ -52,44 +65,99 @@ export function LandingPage({}: Props) {
         />
       )}
 
-      {/* Particle animation overlay */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <BackgroundBeams />
-        <div className="absolute inset-0">
-          {/* Add particle animation here */}
+      {/* Form and Text */}
+      <div className="relative z-10 text-center">
+        {/* Logo */}
+        <div className="mb-4">
+          <img
+            src="/syn.png"
+            alt="Synergy Logo"
+            className="h-24 w-24 mx-auto rounded-full shadow-lg bg-neutral-900 p-2"
+          />
         </div>
-      </div>
+        <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
+          Synergy
+        </h1>
+        <p className="text-gray-400 mt-3 max-w-md mx-auto">
+          Join the waitlist for Synergy and experience psychology-backed
+          compatibility matching.
+        </p>
 
-      <div className="flex flex-row justify-around items-center">
-        <div className="max-w-3xl mx-auto p-6 relative z-10 animate-fade-in bg-black bg-opacity-50 backdrop-blur-md rounded-2xl shadow-2xl">
-          <p
-            className="text-4xl md:text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-400 to-blue-500 animate-text shadow-lg neon-effect mb-70"
-            style={{ marginBottom: "70px" }}
-          >
-            Synergy
-          </p>
-          <p className="text-neutral-400 max-w-lg mx-auto my-4 text-sm text-center mt-6">
-            Skip the small talk and find matches who truly click with you
-            through psychology-backed compatibility scoring
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="mt-8 space-y-4 max-w-md mx-auto"
+        >
+          {/* Full Name Input */}
+          <div className="relative">
             <input
-              type="email"
-              placeholder="Enter your email..."
-              className="rounded-lg p-3 w-full bg-neutral-950 text-gray-300 placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 transform transition-transform duration-300 hover:scale-105 floating-effect"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              name="fullName"
+              placeholder="Full Name"
+              className="w-full py-3 px-4 bg-neutral-900 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-neutral-800 placeholder:text-gray-500"
+              value={formData.fullName}
+              onChange={handleChange}
               required
             />
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 text-white py-3 rounded-lg transition-all duration-300 ease-in-out transform hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 hover:-translate-y-1 hover:scale-105 shadow-3xl neon-button"
-            >
-              Join Waitlist
-            </button>
-          </form>
-        </div>
+          </div>
+
+          {/* Email Input */}
+          <div className="relative">
+            <input
+              type="email"
+              name="email"
+              placeholder="Your Email"
+              className="w-full py-3 px-4 bg-neutral-900 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-neutral-800 placeholder:text-gray-500"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className={`w-full py-3 rounded-lg font-medium text-white transform transition-transform ${
+              isSubmitting
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 hover:scale-105"
+            }`}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <div className="flex items-center justify-center space-x-2">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  ></path>
+                </svg>
+                <span>Adding...</span>
+              </div>
+            ) : (
+              "Join Waitlist"
+            )}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <p className="mt-8 text-sm text-gray-500">
+          Designed by Synergy. Built to connect.
+        </p>
       </div>
     </div>
   );
