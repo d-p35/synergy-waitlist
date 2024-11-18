@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { app } from '@/firebaseConfig';
-import Alert from '../components/alert';
-import { BackgroundBeams } from '@/components/ui/background-beams';
-import Guru from '@/components/robo';
+import React, { useState } from "react";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { app } from "@/firebaseConfig";
+import Alert from "../components/alert";
+import { BackgroundBeams } from "@/components/ui/background-beams";
+import Guru from "@/components/robo";
 
 type Props = {};
 
 export function LandingPage({}: Props) {
-  const [email, setEmail] = useState<string>('');
-  const [alert, setAlert] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning'; duration: number } | null>(null);
+  const [email, setEmail] = useState<string>("");
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: "success" | "error" | "info" | "warning";
+    duration: number;
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,22 +22,36 @@ export function LandingPage({}: Props) {
     setAlert(null);
 
     const db = getFirestore(app);
-    const emailCollection = collection(db, 'waitlist');
+    const emailCollection = collection(db, "waitlist");
 
     try {
       await addDoc(emailCollection, { email });
-      setAlert({ message: 'You are now on the waitlist.', type: 'success', duration: 5000 });
-      setEmail(''); // Clear the email input field after successful submission
+      setAlert({
+        message: "You are now on the waitlist.",
+        type: "success",
+        duration: 5000,
+      });
+      setEmail(""); // Clear the email input field after successful submission
     } catch (error) {
-      console.error('Error adding email to waitlist: ', error);
-      setAlert({ message: 'Failed to add email to waitlist', type: 'error', duration: 5000 });
+      console.error("Error adding email to waitlist: ", error);
+      setAlert({
+        message: "Failed to add email to waitlist",
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
   return (
     <div className="h-screen w-full bg-neutral-950 relative flex flex-col items-center justify-center antialiased text-gray-50 overflow-hidden">
-      {alert && <Alert message={alert.message} type={alert.type} duration={alert.duration} />}
-      
+      {alert && (
+        <Alert
+          message={alert.message}
+          type={alert.type}
+          duration={alert.duration}
+        />
+      )}
+
       {/* Particle animation overlay */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <BackgroundBeams />
@@ -42,13 +60,17 @@ export function LandingPage({}: Props) {
         </div>
       </div>
 
-     <div className='flex flex-row justify-around items-center'>
-       <div className="max-w-3xl mx-auto p-6 relative z-10 animate-fade-in bg-black bg-opacity-50 backdrop-blur-md rounded-2xl shadow-2xl">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-400 to-blue-500 animate-text shadow-lg neon-effect">
-            Guru Nimbus
-          </h1>
-          <p className="text-neutral-400 max-w-lg mx-auto my-4 text-sm text-center">
-            Building GuruNimbus, an advanced AI-powered RAG chatbot that intelligently guides you in rating and discovering the best professors.
+      <div className="flex flex-row justify-around items-center">
+        <div className="max-w-3xl mx-auto p-6 relative z-10 animate-fade-in bg-black bg-opacity-50 backdrop-blur-md rounded-2xl shadow-2xl">
+          <p
+            className="text-4xl md:text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-400 to-blue-500 animate-text shadow-lg neon-effect mb-70"
+            style={{ marginBottom: "70px" }}
+          >
+            Synergy
+          </p>
+          <p className="text-neutral-400 max-w-lg mx-auto my-4 text-sm text-center mt-6">
+            Skip the small talk and find matches who truly click with you
+            through psychology-backed compatibility scoring
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4 mt-6">
