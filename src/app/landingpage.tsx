@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  updateDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { app } from "@/firebaseConfig";
 import Alert from "../components/alert";
 import { BackgroundBeams } from "@/components/ui/background-beams";
@@ -29,8 +37,43 @@ export function LandingPage({}: Props) {
     const db = getFirestore(app);
     const emailCollection = collection(db, "waitlist");
 
+    // Function to check if the email exists in the Firestore collection
+    const checkIfEmailExists = async (email: string) => {
+      try {
+        // Create a query to find documents where the email field matches the provided email
+        const q = query(emailCollection, where("email", "==", email));
+
+        // Execute the query
+        const querySnapshot = await getDocs(q);
+
+        // Check if any document was returned
+        if (querySnapshot.empty) {
+          console.log("Email does not exist.");
+          return false; // Email does not exist
+        } else {
+          console.log("Email already exists.");
+          return true; // Email exists
+        }
+      } catch (error) {
+        console.error("Error checking email:", error);
+        return false; // In case of error, consider the email as non-existing
+      }
+    };
+
     try {
-      await addDoc(emailCollection, formData);
+      // Logic to not add duplicate emails to the waitlist
+      // if (await checkIfEmailExists(formData.email)) {
+      //   setAlert({
+      //     message: "Email already exists in the waitlist.",
+      //     type: "error",
+      //     duration: 5000,
+      //   });
+      //   setFormData({ fullName: "", email: "" }); // Reset the form
+      //   setIsSubmitting(false);
+      //   return;
+      // }
+
+      const docRef = await addDoc(emailCollection, formData);
       setAlert({
         message: "You are now on the waitlist.",
         type: "success",

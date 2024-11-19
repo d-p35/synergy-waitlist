@@ -2,15 +2,20 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 
+
+if (!process.env.NEXT_PUBLIC_FIREBASE_API) {
+  throw new Error("API_KEY is not defined");
+}
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "process.env.FIREBASE_API",
-  authDomain: "process.env.AUTH_DOMAIN",
-  projectId: "join-waitlist-59ed4",
-  storageBucket: "join-waitlist-59ed4.appspot.com",
-  messagingSenderId: "51834626343",
-  appId: "1:51834626343:web:e9b50c351aaedeb20fc902",
-  measurementId: "G-0744MLP9FL"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API,
+  authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGE_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_MESEAUREMENT_ID,
 };
 
 // Initialize Firebase
